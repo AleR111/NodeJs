@@ -1,10 +1,17 @@
 const {formatDistanceToNowStrict, compareAsc} = require('date-fns')
 const EventEmitter = require('events');
+const readline = require('readline')
+
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
 
 const timer = (date) => {
 
-    const dateArray = date.split('-')
-    const finishedDate = new Date(...dateArray.reverse())
+    const dateArray = date.split('-').reverse()
+    dateArray[1] -= 1
+    const finishedDate = new Date(...dateArray)
 
     const isValidDate = compareAsc(finishedDate, new Date())
     if (isValidDate === -1) return console.log('Please input correct date')
@@ -34,5 +41,7 @@ const timer = (date) => {
     emitter.on('finish', Handler.finish)
 
 }
-
-timer(process.argv[2])
+rl.question('Enter the date according to the pattern "ss-mm-hh-dd-MM-YYYY": ', (data) => {
+    timer(data)
+    rl.close()
+});
