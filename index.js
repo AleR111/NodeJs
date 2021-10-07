@@ -1,50 +1,47 @@
-const colors = require("colors")
+const {formatDistanceToNowStrict, compareAsc} = require('date-fns')
+const EventEmitter = require('events');
+const readline = require('readline')
 
-const isSimpleNumber = (num) => {
-  for (let i = 2; i < num; i++) {
-    if (num % i === 0) return false
-  }
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
 
-  return true
-}
+const timer = (date) => {
 
-const paint = (() => {
-  let colorNumber = 1
-  return (num) => {
-    if (colorNumber > 3) colorNumber = 1
-    switch (colorNumber) {
-      case 1:
-        console.log(colors.green(num))
-        break
-      case 2:
-        console.log(colors.yellow(num))
-        break
-      case 3:
-        console.log(colors.red(num))
-        break
+    const dateArray = date.split('-').reverse()
+    dateArray[1] -= 1
+    const finishedDate = new Date(...dateArray)
+
+    const isValidDate = compareAsc(finishedDate, new Date())
+    if (isValidDate === -1) return console.log('Please input correct date')
+
+    const emitter = new EventEmitter()
+
+    class Handler {
+        static next(payload) {
+            console.log(`${payload} left`)
+        }
+        static finish(payload) {
+            console.log('finish')
+            clearInterval(payload)
+        }
     }
-    colorNumber++
-  }
-})()
 
-const simpleNumbers = (downLimit, upLimit) => {
-  if (!Number.isInteger(downLimit) || !Number.isInteger(upLimit)) {
-    return console.log(colors.red("limits are not numbers"))
-  }
-  if (downLimit < 2) downLimit = 2
+    const intervalId = setInterval(() => {
+        console.clear()
+        const result = formatDistanceToNowStrict(finishedDate)
+        if (+result[0] === 0) {
+            emitter.emit('finish', intervalId)
+        } else emitter.emit('next', result)
 
-  let numbersAmount = 0
+    }, 1000)
 
-  for (let i = downLimit; i <= upLimit; i++) {
-    if (isSimpleNumber(i)) {
-      paint(i)
-      numbersAmount++
-    }
-  }
+    emitter.on('next', Handler.next)
+    emitter.on('finish', Handler.finish)
 
-  if (numbersAmount) {
-    console.log(colors.blue(`Amount of simple numbers: ${numbersAmount}`))
-  } else console.log(colors.red(`limit don't have simple numbers`))
 }
-
-simpleNumbers(+process.argv[2], +process.argv[3])
+rl.question('Enter the date according to the pattern "ss-mm-hh-dd-MM-YYYY": ', (data) => {
+    timer(data)
+    rl.close()
+});
