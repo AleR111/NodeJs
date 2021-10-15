@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 const fs = require("fs")
-const readline = require("readline")
 const inquirer = require("inquirer")
 const yargs = require("yargs")
 const path = require("path")
@@ -15,9 +14,35 @@ const options = yargs.usage("Usage -p <path> to file").options("p", {
 
 const executorDir = path.join(process.cwd(), options.path || "")
 
+const search = (data) => {
+  inquirer
+    .prompt([
+      {
+        name: "searchText",
+        type: "input",
+        message: "enter search text: ",
+      },
+    ])
+    .then((answer) => answer.searchText)
+    .then((searchText) => {
+      if (!searchText) {
+        console.log("should to enter text")
+        return search(data)
+      }
+      const re = new RegExp(searchText, "gi")
+      const foundText = data.match(re)
+      if (foundText) {
+        console.log(`Found '${searchText}': ${foundText.length} times`)
+      } else console.log("the search text was not found")
+    })
+}
+
 const dirFiles = (dir) => {
   let fullPath = dir
   const list = fs.readdirSync(dir)
+
+  if (!list.length) return console.log("directory is empty")
+
   inquirer
     .prompt([
       {
@@ -30,13 +55,12 @@ const dirFiles = (dir) => {
     .then((answer) => answer.fileName)
     .then((fileName) => {
       fullPath = path.join(fullPath, fileName)
-      console.log(__dirname)
+
       if (!fs?.lstatSync(fullPath)?.isFile()) {
         return dirFiles(fullPath)
       }
       const data = fs.readFileSync(fullPath, "utf-8")
-
-      console.log(data)
+      search(data)
     })
 }
 
