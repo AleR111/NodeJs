@@ -3,9 +3,17 @@
 const fs = require("fs")
 const readline = require("readline")
 const inquirer = require("inquirer")
+const yargs = require("yargs")
 const path = require("path")
 
-const executorDir = process.cwd()
+const options = yargs.usage("Usage -p <path> to file").options("p", {
+  alias: "path",
+  describe: "path to file",
+  type: "string",
+  demandOption: false,
+}).argv
+
+const executorDir = path.join(process.cwd(), options.path || "")
 
 const dirFiles = (dir) => {
   let fullPath = dir
