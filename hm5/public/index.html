@@ -38,23 +38,37 @@
     <h1>File Manager</h1>
     <label for="input">path:</label>
     <input id="input" type="text">
+    <div class="nav">
+
+    </div>
     <ul class="list">
-        <li class="list-item">
-            <button class="button">lol</button>
-        </li>
+
     </ul>
 </div>
 <script>
     const url = "/getData"
 
+    const render = (data) => {
+        let nav = document.querySelector('.list')
+        nav.innerHTML = ''
+        data.forEach(el => {
+            nav.insertAdjacentHTML('beforeend', `
+            <li class="list-item">
+                <button class="button">${el}</button>
+            </li>
+            `)
+        })
+        console.log(data)
+    }
+
     const getData = (url) => {
         fetch(url)
             .then(result => result.json())
-            .then(data => console.log(data))
+            .then(data => render(data))
             .catch(console.log)
     }
 
-    const btn = document.querySelector('.button')
+    const btn = document.querySelector('.list')
     btn.addEventListener('click', () => getData(url))
     window.onload = () => getData('/load')
 </script>
