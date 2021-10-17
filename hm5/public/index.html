@@ -5,9 +5,58 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File manager</title>
-    <script src="index.js" defer></script>
+    <style>
+        .container {
+            max-width: 1140px;
+            margin: 0 auto;
+        }
+
+        .button {
+            cursor: pointer;
+            background: none;
+            border: 1px solid #2b5278;
+        }
+
+        .button:hover {
+            cursor: pointer;
+            background-color: rgba(43, 82, 120, 0.62);
+        }
+
+        .list {
+            list-style-type: none;
+        }
+
+        .list-item {
+            margin-bottom: 4px;
+        }
+
+    </style>
+
 </head>
 <body>
-<h1>lol</h1>
+<div class="container">
+    <h1>File Manager</h1>
+    <label for="input">path:</label>
+    <input id="input" type="text">
+    <ul class="list">
+        <li class="list-item">
+            <button class="button">lol</button>
+        </li>
+    </ul>
+</div>
+<script>
+    const url = "/getData"
+
+    const getData = (url) => {
+        fetch(url)
+            .then(result => result.json())
+            .then(data => console.log(data))
+            .catch(console.log)
+    }
+
+    const btn = document.querySelector('.button')
+    btn.addEventListener('click', () => getData(url))
+    window.onload = () => getData('/load')
+</script>
 </body>
 </html>
