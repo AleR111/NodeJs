@@ -36,14 +36,12 @@
 <body>
 <div class="container">
     <h1>File Manager</h1>
-    <label for="input">path:</label>
-    <input id="input" type="text">
-    <div class="nav">
-
-    </div>
     <ul class="list">
 
     </ul>
+    <div class="content">
+
+    </div>
 </div>
 <script>
     const url = "/getData"
@@ -51,14 +49,19 @@
     const render = (data) => {
         let nav = document.querySelector('.list')
         nav.innerHTML = ''
-        data.forEach(el => {
-            nav.insertAdjacentHTML('beforeend', `
+        if (Array.isArray(data)) {
+            data.forEach(el => {
+                nav.insertAdjacentHTML('beforeend', `
             <li class="list-item">
-                <button class="button">${el}</button>
+                <button value=${el} class="button">${el}</button>
             </li>
             `)
-        })
-        console.log(data)
+            })
+        } else {
+            let content = document.querySelector('.content')
+            content.innerHTML = ''
+            content.insertAdjacentHTML('beforeend', data)
+        }
     }
 
     const getData = (url) => {
@@ -68,8 +71,13 @@
             .catch(console.log)
     }
 
+    const handler = (e) => {
+        if (e.target.className !== 'button') return
+        getData(`${url}/?path=${e.target.value}`)
+    }
+
     const btn = document.querySelector('.list')
-    btn.addEventListener('click', () => getData(url))
+    btn.addEventListener('click', (e) => handler(e))
     window.onload = () => getData('/load')
 </script>
 </body>
