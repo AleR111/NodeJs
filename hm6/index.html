@@ -8,6 +8,9 @@
     <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" integrity="sha384-PiBR5S00EtOj2Lto9Uu81cmoyZqR57XcOna1oAuVuIEjzj0wpqDVfD0JA9eXlRsj" crossorigin="anonymous"></script>
 </head>
 <body>
+<div id="notification">
+</div>
+<div id="amount"></div>
 <input id="input" type="text" autofocus>
 <button id="button">Send</button>
 <div id="messages"></div>
@@ -16,23 +19,38 @@
     const messageBlock = document.getElementById('messages');
     const sendButton = document.getElementById('button');
     const input = document.getElementById('input');
+    const notification = document.getElementById('notification');
+    const amount = document.getElementById('amount');
 
     socket.on('connect', () => {
         console.log('connect')
+    })
+
+    socket.on('server-msg', ({userName, message}) => {
+        messageBlock.insertAdjacentHTML('beforeend', `<p>${message} :${userName}</p>`)
+    })
+
+    socket.on('new-user', ({name}, count) => {
+        notification.innerHTML = ''
+        notification.insertAdjacentHTML('beforeend', `<p>Connected ${name}</p>`)
+        amount.innerHTML = ''
+        amount.insertAdjacentHTML('beforeend', `<p>Amount of users: ${count}</p>`)
+    })
+
+    socket.on('disconnect-user', ({name}, count) => {
+        notification.innerHTML = ''
+        notification.insertAdjacentHTML('beforeend', `<p>disconnected ${name}</p>`)
+        amount.innerHTML = ''
+        amount.insertAdjacentHTML('beforeend', `<p>Amount of users: ${count}</p>`)
     })
 
     sendButton.onclick = () => {
         const data = {
             message: input.value
         }
-
         socket.emit('client-msg', data)
         input.value = ''
     }
-
-    socket.on('server-msg', ({message}) => {
-        messageBlock.insertAdjacentHTML('beforeend', `<p>${message}</p>`)
-    })
 </script>
 </body>
 </html>
