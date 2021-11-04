@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "filesReader": "./hm4/index.js"
+    "filesReader": "./hm5/index.js"
   },
   "author": "",
   "license": "ISC",

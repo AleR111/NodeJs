@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File manager</title>
+    <style>
+        .container {
+            max-width: 1140px;
+            margin: 0 auto;
+        }
+
+        .button {
+            cursor: pointer;
+            background: none;
+            border: 1px solid #2b5278;
+        }
+
+        .button:hover {
+            cursor: pointer;
+            background-color: rgba(43, 82, 120, 0.62);
+        }
+
+        .list {
+            list-style-type: none;
+        }
+
+        .list-item {
+            margin-bottom: 4px;
+        }
+
+    </style>
+
+</head>
+<body>
+<div class="container">
+    <h1>File Manager</h1>
+    <ul class="list">
+
+    </ul>
+    <div class="content">
+
+    </div>
+</div>
+<script>
+    const url = "/getData"
+
+    const render = (data) => {
+        let nav = document.querySelector('.list')
+        nav.innerHTML = ''
+        if (Array.isArray(data)) {
+            data.forEach(el => {
+                nav.insertAdjacentHTML('beforeend', `
+            <li class="list-item">
+                <button value=${el} class="button">${el}</button>
+            </li>
+            `)
+            })
+        } else {
+            let content = document.querySelector('.content')
+            content.innerHTML = ''
+            content.insertAdjacentHTML('beforeend', data)
+        }
+    }
+
+    const getData = (url) => {
+        fetch(url)
+            .then(result => result.json())
+            .then(data => render(data))
+            .catch(console.log)
+    }
+
+    const handler = (e) => {
+        if (e.target.className !== 'button') return
+        getData(`${url}/?path=${e.target.value}`)
+    }
+
+    const btn = document.querySelector('.list')
+    btn.addEventListener('click', (e) => handler(e))
+    window.onload = () => getData('/load')
+</script>
+</body>
+</html>
