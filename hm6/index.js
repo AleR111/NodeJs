@@ -15,6 +15,11 @@ const io = socket(server);
 
 io.on('connection', (client) => {
     console.log('connection')
+
+    client.on('client-msg', (data) => {
+        client.broadcast.emit('server-msg', data)
+        client.emit('server-msg', data);
+    })
 })
 
 server.listen(8080);

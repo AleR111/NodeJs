@@ -8,10 +8,30 @@
     <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" integrity="sha384-PiBR5S00EtOj2Lto9Uu81cmoyZqR57XcOna1oAuVuIEjzj0wpqDVfD0JA9eXlRsj" crossorigin="anonymous"></script>
 </head>
 <body>
+<input id="input" type="text" autofocus>
+<button id="button">Send</button>
+<div id="messages"></div>
 <script>
     const socket = io('localhost:8080');
+    const messageBlock = document.getElementById('messages');
+    const sendButton = document.getElementById('button');
+    const input = document.getElementById('input');
+
     socket.on('connect', () => {
         console.log('connect')
+    })
+
+    sendButton.onclick = () => {
+        const data = {
+            message: input.value
+        }
+
+        socket.emit('client-msg', data)
+        input.value = ''
+    }
+
+    socket.on('server-msg', ({message}) => {
+        messageBlock.insertAdjacentHTML('beforeend', `<p>${message}</p>`)
     })
 </script>
 </body>
